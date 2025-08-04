@@ -1,13 +1,29 @@
+import cats.Functor
+import models.Box
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
+
 @main
-def main(): Unit =
-  //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
-  // to see how IntelliJ IDEA suggests fixing it.
-  (1 to 5).map(println)
+def main(): Unit = {
+  // Example A:
+  {
+    import Factory.FunctorSyntax.doMath
+    val res: Option[Int] = doMath( Option(20))
+    println(res)
+  }
 
-  for (i <- 1 to 5) do
-    //TIP Press <shortcut actionId="Debug"/> to start debugging your code. We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint
-    // for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.
-    println(s"i = $i")
+  // Example B:
+  {
+    import Factory.FunctorSyntax4.boxFunctor
+    import cats.syntax.functor.*
+
+    val box = Box[Int](123)
+    val res2 = box.map(x => x + 1)
+    println(res2)
+  }
+
+}
+//  (1 to 5).map(println)
+//
+//  for (i <- 1 to 5) do
+//    println(s"i = $i")
 
