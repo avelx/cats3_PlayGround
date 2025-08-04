@@ -38,6 +38,16 @@ def main(): Unit = {
 
   }
 
+  // Example D: imap / Codec's
+  {
+    import Factory.Variance.{stingCodec, doubleCodec, _}
+    println( doubleCodec.encode(112.4) )
+
+    import models.{Box}
+
+    println(  boxCodec[Box[Double]].decode("-123.4") )
+  }
+
 }
 //  (1 to 5).map(println)
 //
