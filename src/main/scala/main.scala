@@ -103,10 +103,52 @@ def main(): Unit = {
     println(res2)
 
     import cats.Id
-    
+
     val z = 3: Id[Int]
     val res3 = sumSquare( 3: Id[Int], 5: Id[Int] )
     println(res3)
+  }
+
+  // Example I: Play with Either
+  {
+    val e1 : Either[String, Int] = Left("Error")
+    val e2 : Either[String, Double] = Right(56)
+
+    val res = {
+      for {
+        x <- e1
+        y <- e2
+      } yield x + y
+    }
+
+    println(res)
+
+    import cats.syntax.either._
+    val a = 311.asRight[String]
+    val b = "Error here".asLeft[Int]
+    println{
+      for {
+        x <- a
+        y <- b
+      } yield x * x + y * y
+    }
+    val res56 = Either.catchOnly[NumberFormatException]("foo22".toInt)
+    println(res56)
+  }
+
+  // Example J: Either transformer's
+  {
+    import cats.syntax.either._
+    val x = "12".asLeft[Int].getOrElse(-12)
+    println(x)
+
+    val y: Either[String, Int] = -14.asRight[String].ensure("Must be no-negative!")(_ > 0)
+    println(y)
+
+    val yy: Either[String, Int] = "error".asLeft[Int].recover {
+      case str: String => -1
+    }
+    println(yy)
   }
 
 }
