@@ -101,6 +101,12 @@ def main(): Unit = {
 
     val res2 = sumSquare(List(1, 2), List(3, 4))
     println(res2)
+
+    import cats.Id
+    
+    val z = 3: Id[Int]
+    val res3 = sumSquare( 3: Id[Int], 5: Id[Int] )
+    println(res3)
   }
 
 }
