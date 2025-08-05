@@ -24,4 +24,19 @@ object Variance {
 
   implicit def boxCodec[A](implicit c: Codec[A]): Codec[Box[A]] = c.imap[Box[A]]( Box(_), _.value)
 
+
+  // Invariance
+  trait Invariant[F[_]] {
+    def imap[A, B](fa: F[A])(f: A => B)(g: B => B) : F[B]
+  }
+
+  // Contravariance
+  trait Contravariance[F[_]] {
+    def contramap[A, B](fa: F[A])(f: B => A): F[B]
+  }
+
+  trait Monoid[A] {
+    def empty: A
+    def combine(x: A, y: A): A
+  }
 }
