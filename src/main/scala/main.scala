@@ -73,12 +73,34 @@ def main(): Unit = {
     println( func3(101) )
   }
 
-  // Example G:
+  // Example G: ~?
   {
     import cats.instances.either._
     val either: Either[String, Int] = Left("123")
     println( either.map(_ + 1))
 
+  }
+
+  // Example H: Monads
+  {
+    import cats.Monad
+    import cats.instances.option._
+    import cats.instances.list._
+
+    import cats.syntax.applicative._ // for pure
+    import Factory.Mondas._
+
+    val opt1 = Monad[Option].pure(3)
+    println(opt1)
+
+    val opt2 = 1.pure[Option]
+    println(opt2)
+
+    val res = sumSquare(Option(7), Option(3))
+    println(res)
+
+    val res2 = sumSquare(List(1, 2), List(3, 4))
+    println(res2)
   }
 
 }
