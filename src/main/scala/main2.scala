@@ -16,18 +16,19 @@ object  main2 extends IOApp {
     //val scheduler = Executors.newScheduledThreadPool(1)
     import scala.concurrent.ExecutionContext.Implicits.global
 
-    def apiCall() = Future{
+    def apiCall(): Future[Either[Throwable, String]] = Future{
       Thread.sleep(3000)
       println("Data test")
-      "Outcome Ok"
+      Right("Outcome Ok")
     }
 
     val ioa: IO[String] = Async[IO].async { cb =>
       import scala.util.{Failure, Success}
 
-      apiCall().onComplete {
-        case Success(value) => cb(Right(value))
-        case Failure(error) => cb(Left(error))
+      apiCall()
+        .onComplete {
+          case Success(value) => cb(value)
+          case Failure(error) => cb(Left(error))
       }
     }
 
