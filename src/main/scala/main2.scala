@@ -16,7 +16,7 @@ object  main2 extends IOApp {
     //val scheduler = Executors.newScheduledThreadPool(1)
     import scala.concurrent.ExecutionContext.Implicits.global
 
-    val apiCall = Future{
+    def apiCall() = Future{
       Thread.sleep(3000)
       println("Data test")
       "Outcome Ok"
@@ -25,18 +25,21 @@ object  main2 extends IOApp {
     val ioa: IO[String] = Async[IO].async { cb =>
       import scala.util.{Failure, Success}
 
-      apiCall.onComplete {
+      apiCall().onComplete {
         case Success(value) => cb(Right(value))
         case Failure(error) => cb(Left(error))
       }
     }
+
+    val ioAA = ioa.map(s => s"$s => GoGoGo")
 
 
 //    import cats.syntax.either._
     val program: IO[ExitCode] =
       for {
         _ <- iob(Right("String"))
-        x <- ioa
+        _ <- ioa // First Call
+        _ <- ioAA // Expect second call with changes string outcome
         _ <- iob(Left(new Error("Data")))
       } yield ExitCode.Success
 
