@@ -1,9 +1,13 @@
 import cats.effect.{ExitCode, IO, IOApp}
 import cats.implicits.catsSyntaxApplicativeError
 
+import java.time.{LocalDate, LocalDateTime}
+import java.util.UUID
 import scala.concurrent.Future
+import scala.concurrent.duration.DurationInt
+import scala.util.Random
 
-object  main3 extends IOApp {
+object  main3 extends IOApp.Simple {
 
   trait Dummy[F[_]] {
     def runSomething[A, B](): Unit = {
@@ -14,9 +18,10 @@ object  main3 extends IOApp {
       //val third: F[_] = first *> second // Need IO to be in scope
     }
   }
-
-  override def run(args: List[String]): IO[ExitCode] = {
+  override def run: IO[Unit] = {
     //val sideEffectCall = IO.pure(throw new Error("SomeError")) // Don't !!!
+
+    val id = IO.pure(10)
 
     val errorAttempt: IO[Int] = IO
       .raiseError(new RuntimeException("Some Error"))
@@ -40,8 +45,28 @@ object  main3 extends IOApp {
 //    }
     //futureNew.recover
 
-    IO.delay(println("Here is our test ...")) *> errorAttempt *>
-      fromFuture *> errorAttemptTwoLifted  *> IO.pure(ExitCode.Success)// *> errorEffect //*> sideEffectCall
+    val simpleAwait = timer.sleep(10.seconds)
+    val tr = for {
+       trace <- IO.trace
+      _ <- trace.printFiberTrace()
+    } yield ()
+
+
+
+    tickingClock
+
+//    tr *> IO.delay(println("Here is our test ...")) *> errorAttempt *> simpleAwait *>
+//      fromFuture *> errorAttemptTwoLifted  *> IO.pure(ExitCode.Success)// *> errorEffect //*> sideEffectCall
+  }
+
+
+  private val tickingClock: IO[Unit] = {
+    for {
+      id <- IO(UUID.randomUUID())
+      _ <- IO.delay(println(s"Id: ${id} Time: - ${LocalDateTime.now()}"))
+      _ <- IO.sleep(1.second)
+      _ <- tickingClock
+    } yield ()
   }
 
 }
