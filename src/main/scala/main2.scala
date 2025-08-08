@@ -1,4 +1,4 @@
-import cats.effect.{Async, ExitCode, IO, IOApp}
+import cats.effect.{Async, ExitCode, IO, IOApp, Sync}
 import cats.implicits.catsSyntaxFlatMapOps
 
 import java.util.concurrent.{Executors, TimeUnit}
@@ -34,14 +34,39 @@ object  main2 extends IOApp {
 
     val ioAA = ioa.map(s => s"$s => GoGoGo")
 
+    val ioa2 = Sync[IO].delay( {
+      println("Delayed action")
+      throw new Error("Some error")
+    } )
+
+    import cats.effect.concurrent.Ref
+    val stateModification =  for {
+      ref <- Ref.of[IO, Int](0)
+      _ <- IO.delay( println(s"State: ${ref.get}"))
+      c2  <- ref.modify(x => (x + 1, x))
+    } yield ()
+
+    val neverTerminatedTask = IO.never *> stateModification
+
+    def fib(n: Int, a: Long, b: Long): IO[Long] =
+      IO.defer {
+        if (n > 0)
+          fib(n - 1, b, a + b)
+        else
+          IO.pure(a)
+      }
 
 //    import cats.syntax.either._
     val program: IO[ExitCode] =
       for {
-        _ <- iob(Right("String"))
-        _ <- ioa // First Call
-        _ <- ioAA // Expect second call with changes string outcome
-        _ <- iob(Left(new Error("Data")))
+        //_ <- iob(Right("String"))
+        //_ <- ioa
+        //_ <- ioa2.attempt
+        //_ <- ioAA // Expect second call with changes string outcome
+        //_ <- iob(Left(new Error("Data")))
+        //_ <- neverTerminatedTask
+        x <- fib(10, 1, 1)
+        _ <- IO.delay( println(s"Result: $x"))
       } yield ExitCode.Success
 
     IO.pure {
