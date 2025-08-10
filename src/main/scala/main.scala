@@ -148,7 +148,13 @@ def main(): Unit = {
     val yy: Either[String, Int] = "error".asLeft[Int].recover {
       case str: String => -1
     }
-    println(yy)
+
+    // Example: with Kleisli
+    {
+      import Factory.KleisliG._
+      val res: Option[Double] = parseAndReciprocal("111r, 343")
+      println(s"Final_Res: $res")
+    }
   }
 
 }
