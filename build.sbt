@@ -8,5 +8,13 @@ lazy val root = (project in file("."))
   )
 
 
-libraryDependencies += "org.typelevel" %% "cats-core" % "2.9.0"
-libraryDependencies += "org.typelevel" %% "cats-effect" % "2.5.3"
+libraryDependencies += "org.typelevel" %% "cats-core" % "2.13.0"
+libraryDependencies += "org.typelevel" %% "cats-effect" % "3.6.2"
+
+lazy val doobieVersion = "1.0.0-RC10"
+
+libraryDependencies ++= Seq(
+  "org.tpolecat" %% "doobie-core"     % doobieVersion,
+  "org.tpolecat" %% "doobie-postgres" % doobieVersion,
+  "org.tpolecat" %% "doobie-specs2"   % doobieVersion
+)
