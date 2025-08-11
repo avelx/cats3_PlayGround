@@ -45,11 +45,11 @@ object  main3 extends IOApp.Simple {
 //    }
     //futureNew.recover
 
-    val simpleAwait = timer.sleep(10.seconds)
-    val tr = for {
-       trace <- IO.trace
-      _ <- trace.printFiberTrace()
-    } yield ()
+//    val simpleAwait = timer.sleep(10.seconds)
+//    val tr = for {
+//       trace <- IO.trace
+//      _ <- trace.printFiberTrace()
+//    } yield ()
 
 
 
