@@ -18,3 +18,5 @@ libraryDependencies ++= Seq(
   "org.tpolecat" %% "doobie-postgres" % doobieVersion,
   "org.tpolecat" %% "doobie-specs2"   % doobieVersion
 )
+
+libraryDependencies ++= Seq("org.typelevel" %% "shapeless3-deriving" % "3.4.0")
