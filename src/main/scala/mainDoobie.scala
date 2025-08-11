@@ -4,9 +4,12 @@ import doobie.implicits.*
 import cats.*
 import cats.effect.*
 import cats.effect.unsafe.implicits.global
-import doobie.util.transactor.Transactor.{Aux, interpret}
+import cats.implicits.catsSyntaxParallelTraverse1
+import doobie.util.transactor.Transactor.{Aux, connect, interpret}
 
-object  mainDoobie extends IOApp.Simple {
+import scala.util.Try
+
+object mainDoobie extends IOApp.Simple {
 
   // Declare connection
   val xa: Aux[IO, Unit] = Transactor.fromDriverManager[IO](
@@ -27,16 +30,37 @@ object  mainDoobie extends IOApp.Simple {
     sql"insert into country (code, name, population, gnp) values ($code, $name, $population, $gnp)"
   }
 
-  val insert: ConnectionIO[Int] = insertCountry("UK", "name", 4500, 4.5).update.run
+  type CountryTuple = (String, String)
+  def insertMany(cs: List[CountryTuple]): ConnectionIO[Int] = {
+    val sql = "insert into country (code, name, population, gnp) values (?, ?, 4500, 45.1)"
+    Update[CountryTuple](sql).updateMany(cs)
+  }
+  val path: os.Path = os.root / "Users" / "pavel" / "devcore" / "plaground" / "cats3_PlayGround" / "data" / "countries.csv"
+
+  val readFileLines: IO[List[Country]] = IO.blocking {
+    val lines = os.read.lines(path)
+    lines
+      .map(_.split(","))
+      .map(arr => Try(Country(arr(1), arr(0))).toOption)
+      .filter(_.isDefined)
+      .collect{
+        case Some(res) if res.code.length <= 2 => res
+      }
+      .toList
+  }
 
   override def run: IO[Unit] = {
     for {
-      _ <- insert.transact(xa)
-      rows <- readCountry
-      _ <- IO.delay{
-        val countries : List[Country] = rows.map(row => Tuples.from(row))
-        countries.foreach(c => println(c))
-      }
+      counties <- readFileLines
+      _ <- IO.delay( println(counties))
+      _ <- insertMany( counties.map(x => (x.code, x.name) )).transact(xa)
+      //_ <- insertBatch(counties.toList).flatMap(
+
+      //rows <- readCountry(counties)
+      //      _ <- IO.delay{
+      //        val countries : List[Country] = rows.map(row => Tuples.from(row))
+      //        countries.foreach(c => println(c))
+      //      }
     } yield ()
   }
 }

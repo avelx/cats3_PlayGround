@@ -20,3 +20,4 @@ libraryDependencies ++= Seq(
 )
 
 libraryDependencies ++= Seq("org.typelevel" %% "shapeless3-deriving" % "3.4.0")
+libraryDependencies += "com.lihaoyi" %% "os-lib" % "0.11.3"
